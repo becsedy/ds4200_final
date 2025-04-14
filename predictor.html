@@ -221,3 +221,130 @@
   </script>
 </body>
 </html>
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Diabetes Predictor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar__container">
+      <a href="index.html" id="navbar__logo">
+        <span class="logo-long">Group 26</span>
+        <span class="logo-short">G26</span>
+      </a>
+      <ul class="navbar__menu">
+        <li class="navbar__item">
+          <a href="uncont.html" class="navbar__links">Uncontrollable Factors</a>
+        </li>
+        <li class="navbar__item">
+          <a href="controllables.html" class="navbar__links">Controllable Factors</a>
+        </li>
+        <li class="navbar__item">
+          <a href="analysis.html" class="navbar__links">Overall Analysis</a>
+        </li>
+        <li class="navbar__btn">
+          <a href="predictor.html" class="button">Test Our Prediction!</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Predictor Form -->
+  <div class="main">
+    <div class="main__container">
+      <div class="graph-container">
+        <h2>Diabetes Risk Predictor</h2>
+        <form id="predict-form">
+          <div class="form-group"><label>BMI:</label><input type="number" id="BMI" required /></div>
+          <div class="form-group"><label>Age:</label><input type="number" id="Age" required /></div>
+          <div class="form-group"><label>Sex (0 = Female, 1 = Male):</label><input type="number" id="Sex" min="0" max="1" required /></div>
+          <div class="form-group"><label>High Cholesterol (0 or 1):</label><input type="number" id="HighChol" min="0" max="1" required /></div>
+          <div class="form-group"><label>High Blood Pressure (0 or 1):</label><input type="number" id="HighBP" min="0" max="1" required /></div>
+          <div class="form-group"><label>General Health (1 = Excellent, 5 = Poor):</label><input type="number" id="GenHlth" min="1" max="5" required /></div>
+          <div class="form-group"><label>Smoker (0 or 1):</label><input type="number" id="Smoker" min="0" max="1" required /></div>
+          <div class="form-group"><label>Physical Health Days (0–30):</label><input type="number" id="PhysHlth" min="0" max="30" required /></div>
+          <div class="form-group"><label>Fruits (0 or 1):</label><input type="number" id="Fruits" min="0" max="1" required /></div>
+          <div class="form-group"><label>Income (1 = Lowest, 8 = Highest):</label><input type="number" id="Income" min="1" max="8" required /></div>
+          <div class="form-group"><label>Mental Health Days (0–30):</label><input type="number" id="MentHlth" min="0" max="30" required /></div>
+          <div class="form-group"><label>Education (1 = Never attended, 6 = College grad):</label><input type="number" id="Education" min="1" max="6" required /></div>
+          <button type="submit">Predict</button>
+        </form>
+        <div id="result"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Predictor Script -->
+  <script src="model.js"></script>
+  <script>
+    const form = document.getElementById('predict-form');
+    const result = document.getElementById('result');
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const input = [
+        parseFloat(document.getElementById("BMI").value),
+        parseInt(document.getElementById("Age").value),
+        parseInt(document.getElementById("Sex").value),
+        parseInt(document.getElementById("HighChol").value),
+        parseInt(document.getElementById("HighBP").value),
+        parseInt(document.getElementById("GenHlth").value),
+        parseInt(document.getElementById("Smoker").value),
+        parseInt(document.getElementById("PhysHlth").value),
+        parseInt(document.getElementById("Fruits").value),
+        parseInt(document.getElementById("Income").value),
+        parseInt(document.getElementById("MentHlth").value),
+        parseInt(document.getElementById("Education").value)
+      ];
+
+      const probs = score(input);
+      const prediction = probs.indexOf(Math.max(...probs));
+      const confidence = (probs[prediction] * 100).toFixed(1); 
+
+      const labels = ["No Diabetes", "Prediabetic", "Diabetic"];
+      result.innerText = `Prediction: ${labels[prediction]} (${confidence}% confidence)`;
+    });
+  </script>
+
+  <!-- Model Explanation Section -->
+  <section class="conclusion-section">
+    <div class="conclusion-container">
+      <h2>🔍 About the Prediction Model</h2>
+      <p>
+        To build this diabetes predictor, we used a <strong>Random Forest Classifier</strong>,
+        a robust machine learning model that combines multiple decision trees to make predictions. 
+        We selected the <strong>top 12 most important features</strong> from our dataset—like 
+        <em>BMI, Age, Blood Pressure, Cholesterol, Smoking, General Health, Education, and Income</em>—based on feature importance analysis.
+      </p>
+      <p>
+        These features were used to train the model on 80% of the dataset and test it on the remaining 20%. 
+        To improve performance and keep the model lightweight for browser use, we tuned the hyperparameters:
+      </p>
+      <ul>
+        <li>n_estimators = 35</code>: more trees for better averaging</li>
+        <li>max_depth = 8</code>: deeper trees to learn more complex patterns</li>
+        <li>min_samples_leaf = 5</code>: helps avoid overfitting</li>
+        <li>class_weight = "balanced"</code>: compensates for class imbalance</li>
+      </ul>
+      <p>
+        The model achieved an accuracy of <strong>51.85%</strong> on unseen test data. 
+        It was then exported into a lightweight JavaScript version (<code>model.js</code>) 
+        so users can instantly get predictions in the browser by entering their health data above.
+      </p>
+    </div>
+  </section>
+</body>
+</html>
+
